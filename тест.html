@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эмоциональный интеллект: ваш режим по умолчанию</title>
+    <style>
+        :root {
+            --primary: #5a4bff; /* Фиолетовый */
+            --secondary: #f04a52; /* Красный */
+            --accent: #1a9384; /* Бирюзовый */
+            --warning: #d97706; /* Оранжевый */
+            --bg: #f4f4f9;
+            --text: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.1s, box-shadow 0.2s;
+            background-color: #f0f0f5;
+            color: var(--text);
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .btn:hover {
+            background-color: #e5e5ea;
+        }
+
+        .btn:active {
+            transform: scale(0.99);
+        }
+
+        /* Кружки с буквами */
+        .letter-circle {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .letter-a { background-color: var(--primary); }
+        .letter-b { background-color: var(--secondary); }
+        .letter-c { background-color: var(--accent); }
+        .letter-d { background-color: var(--warning); }
+
+        /* Стили для правил и результатов */
+        .rules-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .rules-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .rule-number {
+            background: var(--primary);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .start-btn {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding-left: 20px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .start-btn:hover {
+            background-color: #483bd6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #eee;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-counter {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .level {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding-left: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Экран 1: Старт -->
+    <div id="screen-start" class="screen active">
+        <h1>Эмоциональный интеллект</h1>
+        <p class="subtitle">Ваш режим по умолчанию</p>
+        <p style="text-align: center; margin-bottom: 30px; font-weight: 500;">Интерактивный тест: 12 ситуаций</p>
+        
+        <ul class="rules-list">
+            <li>
+                <div class="rule-number">1</div>
+                <div><strong>Выбирайте реальное</strong><br>Отметьте реакцию, которая ближе к вашей, а не к идеальной.</div>
+            </li>
+            <li>
+                <div class="rule-number">2</div>
+                <div><strong>20 секунд на ситуацию</strong><br>Не раздумывайте: первая реакция самая честная.</div>
+            </li>
+            <li>
+                <div class="rule-number">3</div>
+                <div><strong>Ключ в конце</strong><br>Баллы считаем после последней ситуации.</div>
+            </li>
+        </ul>
+        <p style="text-align: center; font-style: italic; color: #777; margin-bottom: 30px;">Это зеркало для разговора, а не диагноз</p>
+        
+        <button class="btn start-btn" onclick="startTest()">Начать тест</button>
+    </div>
+
+    <!-- Экран 2: Вопросы -->
+    <div id="screen-quiz" class="screen">
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="question-counter" class="question-counter">Ситуация 1 из 12</div>
+        <h2 id="question-text">Текст вопроса</h2>
+        
+        <div id="options-container">
+            <!-- Кнопки будут добавлены через JS -->
+        </div>
+    </div>
+
+    <!-- Экран 3: Результат -->
+    <div id="screen-result" class="screen">
+        <div class="result-box">
+            <h1>Ваш результат</h1>
+            <div id="score-display" class="score">0</div>
+            <div id="level-display" class="level">Уровень</div>
+            <p id="desc-display" class="description">Описание</p>
+            <button class="btn restart-btn" onclick="restartTest()">Пройти заново</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Данные вопросов и баллов (на основе ключа из презентации)
+    const questions = [
+        {
+            text: "Утро понедельника, настроение «хочется всех уволить». Что вы делаете?",
+            options: [
+                { text: "Пью кофе и жду, пока само пройдёт", points: 2 },
+                { text: "Выясняю, что именно раздражает: недосып, дедлайн или чьё-то сообщение", points: 3 },
+                { text: "Отыгрываюсь на первом встречном", points: 1 },
+                { text: "Делаю вид, что всё отлично, и улыбаюсь весь день", points: 1 }
+            ]
+        },
+        {
+            text: "Коллега при всех раскритиковал ваш отчёт.",
+            options: [
+                { text: "Отвечаю в том же тоне", points: 2 },
+                { text: "Молчу, но запоминаю", points: 0 },
+                { text: "Перевожу в шутку, а потом неделю переживаю", points: 1 },
+                { text: "Беру паузу, прошу конкретики и обсуждаю позже один на один", points: 3 }
+            ]
+        },
+        {
+            text: "Друг пишет «Всё нормально», но без смайлов и с точками в конце.",
+            options: [
+                { text: "«Слышу, что что-то не так. Хочешь поговорить или лучше потом?»", points: 3 },
+                { text: "Верю на слово", points: 1 },
+                { text: "Закидываю вопросами «Что случилось?!»", points: 0 },
+                { text: "Присылаю мем, чтобы развеселить", points: 1 }
+            ]
+        },
+        {
+            text: "Ваш проект провалился.",
+            options: [
+                { text: "Ищу виноватых", points: 0 },
+                { text: "Решаю, что я не гожусь для этого", points: 1 },
+                { text: "Разбираю, что сработало и что нет, и записываю выводы", points: 3 },
+                { text: "Быстро берусь за следующий, чтобы не думать", points: 1 }
+            ]
+        },
+        {
+            text: "Нужно убедить руководителя принять вашу идею.",
+            options: [
+                { text: "Привожу цифры и говорю, что идея очевидно лучшая", points: 0 },
+                { text: "Выясняю, что сейчас важно ему, и показываю, как идея помогает", points: 3 },
+                { text: "Прихожу с поддержкой коллег", points: 1 },
+                { text: "Жду, пока он сам догадается", points: 0 }
+            ]
+        },
+        {
+            text: "Вас публично хвалят.",
+            options: [
+                { text: "Отмахиваюсь: «Да ничего особенного»", points: 1 },
+                { text: "Думаю: «Просто повезло»", points: 1 },
+                { text: "Радуюсь и сразу думаю, как сделать ещё лучше", points: 0 },
+                { text: "Говорю «Спасибо» и отмечаю про себя, что именно получилось", points: 3 }
+            ]
+        },
+        {
+            text: "В очереди человек срывается на кассира.",
+            options: [
+                { text: "Закатываю глаза", points: 0 },
+                { text: "Вступаюсь и ставлю его на место", points: 1 },
+                { text: "Думаю, что у него, возможно, тяжёлый день, и не принимаю это на свой счёт", points: 3 },
+                { text: "Делаю вид, что ничего не происходит", points: 1 }
+            ]
+        },
+        {
+            text: "Дедлайн горит, а вас просят о срочной помощи.",
+            options: [
+                { text: "Оцениваю ресурсы и честно говорю, что могу и когда", points: 3 },
+                { text: "Соглашаюсь на всё и потом страдаю", points: 1 },
+                { text: "Резко отказываю", points: 0 },
+                { text: "Вежливо отказываю без объяснений", points: 2 }
+            ]
+        },
+        {
+            text: "Двое коллег ссорятся при вас.",
+            options: [
+                { text: "Ухожу", points: 0 },
+                { text: "Помогаю каждому сформулировать, чего он хочет", points: 3 },
+                { text: "Встаю на сторону того, кто мне ближе", points: 1 },
+                { text: "Шучу, чтобы разрядить обстановку", points: 1 }
+            ]
+        },
+        {
+            text: "Вы поймали себя на том, что говорите на повышенных тонах.",
+            options: [
+                { text: "Продолжаю: правота важнее", points: 0 },
+                { text: "Замолкаю и обижаюсь", points: 0 },
+                { text: "Меняю тему", points: 1 },
+                { text: "Говорю: «Я повысил голос, давайте продолжим спокойнее»", points: 3 }
+            ]
+        },
+        {
+            text: "Новичок в команде стоит один на корпоративе.",
+            options: [
+                { text: "Подхожу и знакомлю его с кем-то из коллег", points: 3 },
+                { text: "Улыбаюсь издали", points: 1 },
+                { text: "Думаю, что сам разберётся", points: 0 },
+                { text: "Подхожу и заговариваю о работе", points: 1 }
+            ]
+        },
+        {
+            text: "Что помогает вам держаться на длинной дистанции?",
+            options: [
+                { text: "Страх подвести", points: 0 },
+                { text: "Сила воли", points: 1 },
+                { text: "Понимание, зачем мне это, и маленькие промежуточные победы", points: 3 },
+                { text: "Награда в конце", points: 2 }
+            ]
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let totalScore = 0;
+
+    const screenStart = document.getElementById('screen-start');
+    const screenQuiz = document.getElementById('screen-quiz');
+    const screenResult = document.getElementById('screen-result');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const progressFill = document.getElementById('progress-fill');
+    const questionCounter = document.getElementById('question-counter');
+
+    function startTest() {
+        currentQuestionIndex = 0;
+        totalScore = 0;
+        screenStart.classList.remove('active');
+        screenQuiz.classList.add('active');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQuestionIndex];
+        
+        // Обновляем прогресс
+        const progress = ((currentQuestionIndex) / questions.length) * 100;
+        progressFill.style.width = progress + '%';
+        questionCounter.textContent = `Ситуация ${currentQuestionIndex + 1} из ${questions.length}`;
+        
+        // Обновляем текст
+        questionText.textContent = q.text;
+        optionsContainer.innerHTML = '';
+
+        // Создаем кнопки
+        const letters = ['А', 'Б', 'В', 'Г'];
+        const classes = ['letter-a', 'letter-b', 'letter-c', 'letter-d'];
+
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            
+            // Кружок с буквой
+            const circle = document.createElement('span');
+            circle.className = `letter-circle ${classes[index]}`;
+            circle.textContent = letters[index];
+            
+            btn.appendChild(circle);
+            btn.appendChild(document.createTextNode(opt.text));
+            
+            btn.onclick = () => selectOption(opt.points);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function selectOption(points) {
+        totalScore += points;
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+            renderQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        screenQuiz.classList.remove('active');
+        screenResult.classList.add('active');
+        
+        document.getElementById('score-display').textContent = totalScore;
+        
+        let level = "";
+        let desc = "";
+
+        if (totalScore >= 28) {
+            level = "Эмоциональный навигатор";
+            desc = "Замечаете эмоции, свои и чужие, и спокойно с ними обращаетесь.";
+            document.getElementById('level-display').style.color = "#5a4bff";
+        } else if (totalScore >= 19) {
+            level = "Надёжный союзник";
+            desc = "База крепкая, но в стрессе включается автопилот.";
+            document.getElementById('level-display').style.color = "#1a9384";
+        } else if (totalScore >= 10) {
+            level = "Вулкан со вкусом";
+            desc = "Эмоции яркие и пока часто управляют вами.";
+            document.getElementById('level-display').style.color = "#d97706";
+        } else {
+            level = "Режим выживания";
+            desc = "Действуете по инерции. Начните с привычки называть состояние словами.";
+            document.getElementById('level-display').style.color = "#f04a52";
+        }
+
+        document.getElementById('level-display').textContent = level;
+        document.getElementById('desc-display').textContent = desc;
+    }
+
+    function restartTest() {
+        screenResult.classList.remove('active');
+        screenStart.classList.add('active');
+        totalScore = 0;
+        currentQuestionIndex = 0;
+        progressFill.style.width = '0%';
+    }
+</script>
+
+</body>
+</html>
